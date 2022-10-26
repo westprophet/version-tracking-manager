@@ -1,0 +1,24 @@
+{
+  "ts-node": {
+    // these options are overrides used only by ts-node
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
+  "compilerOptions": {
+    "sourceMap": true,
+    "outDir": "dist",
+    "target": "es6",
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "allowJs": true,
+  },
+  "lib": ["es2015"],
+  "exclude": [
+    "**/*.js",
+  ],
+  "include": [
+    "**/*.ts"
+  ]
+
+}
