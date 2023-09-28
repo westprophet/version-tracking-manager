@@ -1,5 +1,10 @@
 # Version Tracking Manager Library
 
+Here is the documentation:
+
+- [Русская Документация](https://github.com/westprophet/version-tracking-manager/blob/main/docs/README.ru.md)
+- [Українська Документація](https://github.com/westprophet/version-tracking-manager/blob/main/docs/README.ua.md)
+
 The **Version Tracking Manager** library is a JavaScript library that helps you manage and track which versions of your web application users have seen. It provides a simple and efficient way to display change logs or important information to users based on their interaction with different versions of your application.
 
 ## Installation
