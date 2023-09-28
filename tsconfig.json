@@ -8,7 +8,7 @@
   "compilerOptions": {
     "sourceMap": true,
     "outDir": "dist",
-    "target": "es6",
+    "target": "es2016",
     "esModuleInterop": true,
     "module": "commonjs",
     "allowJs": true,
