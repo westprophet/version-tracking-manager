@@ -5,7 +5,9 @@ import { IViewObject } from './types';
  * @description A class for tracking which versions of the web application users have seen.
  */
 export default class VersionTrackingManager {
-  public STORAGE_KEY: string = 'version-tracking-data';
+  public STORAGE_KEY: string = 'version-tracking-key';
+  public SESSION_VIEW_KEY: string  = 'version-tracking-key';
+
   public CURRENT_VERSION: string;
 
   /**
@@ -15,11 +17,21 @@ export default class VersionTrackingManager {
    */
   constructor(currentVersion: string, storageKey?: string) {
     this.CURRENT_VERSION = currentVersion;
+
     if (storageKey) this.STORAGE_KEY = storageKey;
     let userData: IViewObject | null | boolean | undefined = this.getLocalUserData();
 
     // If user data is not available, initialize it as an empty object.
     if (userData === null) this.setLocalUserData({});
+  }
+
+  /**
+   * Пропустить проверку в эту сессию
+   */
+
+  public skipCheckThisSession(){
+    const v = sessionStorage.getItem(this.SESSION_VIEW_KEY)
+    if(!v) sessionStorage.setItem(this.SESSION_VIEW_KEY, Date.now().toString());
   }
 
   /**

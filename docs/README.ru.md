@@ -75,6 +75,13 @@ versionManager.skipCheckThisSession();
 
 Пропускает проверку для текущей сессии пользователя, что позволяет пользователю не видеть уведомления о текущей версии в течение текущей сессии.
 
+## Пример
+React:
+
+## Пример
+React:
+[Приклад](https://github.com/westprophet/version-tracking-manager/blob/main/examples/REACT-EXAMPLE.ru.md)
+
 ## Лицензия
 
 `VersionTrackingManager` лицензирован под MIT License.

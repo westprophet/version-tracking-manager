@@ -69,6 +69,15 @@ versionTrackingManager.skipCheckThisSession();
 
 We welcome contributions from the community. If you'd like to contribute to the **Version Tracking Manager** library, please follow our [contribution guidelines](link-to-contributions).
 
+## Examples
+Here are usage examples in React:
+
+- [English Example](https://github.com/westprophet/version-tracking-manager/blob/main/examples/REACT-EXAMPLE.en.md)
+- [Русский Пример](https://github.com/westprophet/version-tracking-manager/blob/main/examples/REACT-EXAMPLE.ru.md)
+- [Український Приклад](https://github.com/westprophet/version-tracking-manager/blob/main/examples/REACT-EXAMPLE.ua.md)
+
 ## License
 
 This library is licensed under the [MIT License](link-to-license).
+
+

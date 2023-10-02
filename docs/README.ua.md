@@ -64,6 +64,10 @@ versionTrackingManager.skipCheckThisSession();
 
 Ми вітаємо внесок від спільноти. Якщо ви хочете внести внесок до бібліотеки **Version Tracking Manager**, будь ласка, дотримуйтесь наших [принципів внеску](посилання на внесок).
 
+## Приклад
+React:
+[Приклад](https://github.com/westprophet/version-tracking-manager/blob/main/examples/REACT-EXAMPLE.ua.md)
+
 ## Ліцензія
 
 Ця бібліотека ліцензована за ліцензією [MIT License](посилання на ліцензію).

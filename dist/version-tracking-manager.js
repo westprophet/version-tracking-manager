@@ -11,7 +11,8 @@ class VersionTrackingManager {
      * @param storageKey - Optional storage key for local storage (default is 'version-tracking-data').
      */
     constructor(currentVersion, storageKey) {
-        this.STORAGE_KEY = 'version-tracking-data';
+        this.STORAGE_KEY = 'version-tracking-key';
+        this.SESSION_VIEW_KEY = 'version-tracking-key';
         this.CURRENT_VERSION = currentVersion;
         if (storageKey)
             this.STORAGE_KEY = storageKey;
@@ -19,6 +20,14 @@ class VersionTrackingManager {
         // If user data is not available, initialize it as an empty object.
         if (userData === null)
             this.setLocalUserData({});
+    }
+    /**
+     * Пропустить проверку в эту сессию
+     */
+    skipCheckThisSession() {
+        const v = sessionStorage.getItem(this.SESSION_VIEW_KEY);
+        if (!v)
+            sessionStorage.setItem(this.SESSION_VIEW_KEY, Date.now().toString());
     }
     /**
      * Set the current version as viewed for a user.
