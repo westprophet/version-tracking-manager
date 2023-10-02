@@ -1,10 +1,10 @@
-# Example of Using the `version-tracking-manager` Library in a React.js Application
+# Example of Using the `version-tracking-manager` Library in React.js
 
-This example demonstrates how to use the `version-tracking-manager` library in a React.js application to track versions and display change logs in a modal window.
+This example demonstrates how to use the `version-tracking-manager` library in a React.js application to track versions and display changelogs in a modal window.
 
 ## Step 1: Installing the Library
 
-To get started, install the `version-tracking-manager` library using `yarn`:
+First, install the `version-tracking-manager` library using `yarn`:
 
 ```bash
 yarn add version-tracking-manager
@@ -12,20 +12,20 @@ yarn add version-tracking-manager
 
 ## Step 2: Initializing the Library
 
-Create a file named `version-tracking-manager.ts` (or any other suitable name) and initialize the library with the current version of your application, using information from the `package.json` file:
+Create a file named `src/version-tracking-manager.ts` (or any other suitable name) and initialize the library with the current version of your application using information from the `package.json` file:
 
 ```javascript
-// version-tracking-manager.ts
+// src/version-tracking-manager.ts
 
-import p from '../package.json';
+import p from './package.json';
 import VersionTrackingManager from 'version-tracking-manager';
 
 export default new VersionTrackingManager(p.version);
 ```
 
-## Step 3: Creating the Change Log Dialog Component
+## Step 3: Creating the Changelog Dialog Component
 
-Create a React.js component that displays change logs in a modal window and uses the `version-tracking-manager` library to manage the display of logs:
+Create a React.js component that displays changelogs in a modal window and uses the `version-tracking-manager` library to manage changelog visibility:
 
 ```javascript
 // ChangeLogDialog.js
@@ -44,7 +44,7 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { useGetUserRoleGroup, useGetUserRoleType } from '../../hooks/profile/useGetUserRole';
 import useChangeLog from './hooks/useChangeLog';
-import VersionTrackingManager from 'version-tracking-manager';
+import VersionTrackingManager from 'src/version-tracking-manager.ts';
 
 export default function ChangeLogDialog({ className }: IChangeLogDialogProps) {
   const profileRole = useGetUserRoleType();
@@ -116,9 +116,9 @@ interface IChangeLogDialogProps {
 }
 ```
 
-## Step 4: Using the Hook to Display Change Logs
+## Step 4: Using the Hook to Display Changelogs
 
-Utilize the `useChangeLog` hook to manage the display of change logs in your application:
+Use the `useChangeLog` hook to manage the display of changelogs in your application:
 
 ```javascript
 // useChangeLog.js
@@ -126,8 +126,8 @@ Utilize the `useChangeLog` hook to manage the display of change logs in your app
 import useAuth from '../../../hooks/profile/useAuth';
 import useProfile from '../../../hooks/profile/useProfile';
 import { useCallback, useEffect, useState } from 'react';
-import VersionTrackingManager from 'version-tracking-manager';
 import changelogFile from '../../../CHANGELOG.md';
+import VersionTrackingManager from 'src/version-tracking-manager.ts';
 
 export default function useChangeLog() {
   const { isAuth } = useAuth();
@@ -136,7 +136,7 @@ export default function useChangeLog() {
   const [changelog, setChangeLog] = useState<string>('');
 
   /**
-   * Fetch change logs
+   * Fetch changelogs
    */
   useEffect(() => {
     if (!profile) return;
@@ -150,12 +150,13 @@ export default function useChangeLog() {
    */
   useEffect(() => {
     if (isAuth && profile && changelog) {
-      const versionTrackingManager = new VersionTrackingManager(p.version);
-      const v = versionTrackingManager.canUserSeeVersion(String(profile.Id));
+      const v = VersionTrackingManager.canUserSeeVersion(String(profile.Id));
       setTimeout(() => {
         setOpenChangelog(!v);
       }, 2000);
-    }
+   
+
+ }
   }, [isAuth, profile, changelog]);
 
   /**
@@ -164,20 +165,16 @@ export default function useChangeLog() {
   const confirm = useCallback(() => {
     if (isAuth && profile && changelog) {
       const id = String(profile.Id);
-      const versionTrackingManager = new VersionTrackingManager(p.version);
-      return versionTrackingManager.markVersionAsViewed(id);
+      return VersionTrackingManager.markVersionAsViewed(id);
     }
   }, [changelog, isAuth, profile]);
 
   const skip = useCallback(() => {
     if (isAuth && profile && changelog) {
-      const versionTrackingManager = new VersionTrackingManager(p.version);
-      return versionTrackingManager.skipCheckThisSession();
+      return VersionTrackingManager.skipCheckThisSession();
     }
   }, [changelog, isAuth, profile]);
 
   return { isOpenChangeLog, setOpenChangelog, changelog, confirm, skip };
 }
 ```
-
-You now have a complete example of using the `version-tracking-manager` library in your React.js application. You can use this example to track versions and display change logs in a modal window.

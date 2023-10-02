@@ -12,10 +12,10 @@ yarn add version-tracking-manager
 
 ## Шаг 2: Инициализация библиотеки
 
-Создайте файл `version-tracking-manager.ts` (или любое другое удобное имя) и проинициализируйте библиотеку с текущей версией вашего приложения, используя информацию из файла `package.json`:
+Создайте файл `src/version-tracking-manager.ts` (или любое другое удобное имя) и проинициализируйте библиотеку с текущей версией вашего приложения, используя информацию из файла `package.json`:
 
 ```javascript
-// version-tracking-manager.ts
+// src/version-tracking-manager.ts
 
 import p from './package.json';
 import VersionTrackingManager from 'version-tracking-manager';
@@ -44,7 +44,7 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { useGetUserRoleGroup, useGetUserRoleType } from '../../hooks/profile/useGetUserRole';
 import useChangeLog from './hooks/useChangeLog';
-import VersionTrackingManager from 'version-tracking-manager';
+import VersionTrackingManager from 'src/version-tracking-manager.ts';
 
 export default function ChangeLogDialog({ className }: IChangeLogDialogProps) {
   const profileRole = useGetUserRoleType();
@@ -126,8 +126,8 @@ interface IChangeLogDialogProps {
 import useAuth from '../../../hooks/profile/useAuth';
 import useProfile from '../../../hooks/profile/useProfile';
 import { useCallback, useEffect, useState } from 'react';
-import VersionTrackingManager from 'version-tracking-manager'; // Обновленный импорт библиотеки
 import changelogFile from '../../../CHANGELOG.md';
+import VersionTrackingManager from 'src/version-tracking-manager.ts';
 
 export default function useChangeLog() {
   const { isAuth } = useAuth();
@@ -146,12 +146,11 @@ export default function useChangeLog() {
   }, [profile]);
 
   /**
-   * Показываем модалку
+   * Показываем модалку через 2 секунды
    */
   useEffect(() => {
     if (isAuth && profile && changelog) {
-      const versionTrackingManager = new VersionTrackingManager(p.version); // Обновленная инициализация
-      const v = versionTrackingManager.canUserSeeVersion(String(profile.Id));
+      const v = VersionTrackingManager.canUserSeeVersion(String(profile.Id));
       setTimeout(() => {
         setOpenChangelog(!v);
       }, 2000);
@@ -164,22 +163,16 @@ export default function useChangeLog() {
   const confirm = useCallback(() => {
     if (isAuth && profile && changelog) {
       const id = String(profile.Id);
-      const versionTrackingManager = new VersionTrackingManager(p.version); // Обновленная инициализация
-      return versionTrackingManager.markVersionAsViewed(id);
+      return VersionTrackingManager.markVersionAsViewed(id);
     }
   }, [changelog, isAuth, profile]);
 
   const skip = useCallback(() => {
     if (isAuth && profile && changelog) {
-      const versionTrackingManager = new VersionTrackingManager(p.version); // Обновленная инициализация
-      return versionTrackingManager.skipCheckThisSession();
+      return VersionTrackingManager.skipCheckThisSession();
     }
   }, [changelog, isAuth, profile]);
 
-  return { isOpenChangeLog
-
-, setOpenChangelog, changelog, confirm, skip };
+  return { isOpenChangeLog, setOpenChangelog, changelog, confirm, skip };
 }
 ```
-
-Теперь у вас есть полный пример использования библиотеки `version-tracking-manager` в вашем приложении React.js. Вы можете использовать этот пример для отслеживания версий и отображения логов изменений в модальном окне.

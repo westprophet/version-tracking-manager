@@ -1,49 +1,57 @@
+# Приклад використання бібліотеки `version-tracking-manager` в React.js
 
-# Приклад використання бібліотеки Version Tracking Manager у React.js
+Цей приклад показує, як використовувати бібліотеку `version-tracking-manager` в додатку React.js для відстеження версій і відображення журналу змін у модальному вікні.
 
-У цьому прикладі ми покажемо, як використовувати бібліотеку Version Tracking Manager для відстеження версій вашого веб-додатка та відображення повідомлень про зміни користувачам.
+## Крок 1: Встановлення бібліотеки
 
-## Встановлення
-
-Для використання бібліотеки Version Tracking Manager вам необхідно спершу встановити її за допомогою наступної команди:
+Спершу встановіть бібліотеку `version-tracking-manager` за допомогою `yarn`:
 
 ```bash
 yarn add version-tracking-manager
 ```
 
-## Створення компонента ChangeLogDialog
+## Крок 2: Ініціалізація бібліотеки
 
-Ми створимо компонент `ChangeLogDialog`, який буде відображати журнал змін для користувачів після оновлення версії додатка. Цей компонент використовує бібліотеку Version Tracking Manager для відстеження, які версії користувачі бачили.
+Створіть файл `src/version-tracking-manager.ts` (або інше зручне ім'я) та ініціалізуйте бібліотеку поточною версією вашого додатка, використовуючи інформацію з файлу `package.json`:
 
 ```javascript
+// src/version-tracking-manager.ts
+
+import p from './package.json';
+import VersionTrackingManager from 'version-tracking-manager';
+
+export default new VersionTrackingManager(p.version);
+```
+
+## Крок 3: Створення компонента діалогу журналу змін
+
+Створіть компонент React.js, який відображає журнал змін у модальному вікні та використовує бібліотеку `version-tracking-manager` для керування відображенням журналу змін:
+
+```javascript
+// ChangeLogDialog.js
+
 import React, { useCallback } from 'react';
 import s from './ChangeLogDialog.module.scss';
 import cn from 'classnames';
-import Dialog, { DialogProps } from '@mui/material/Dialog';
+import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
-import useChangelog from './hooks/useChangeLog';
-import { Button } from '@mui/material';
-
+import Button from '@mui/material/Button';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-
-import {
-  useGetUserRoleGroup,
-  useGetUserRoleType,
-} from '../../hooks/profile/useGetUserRole';
+import { useGetUserRoleGroup, useGetUserRoleType } from '../../hooks/profile/useGetUserRole';
+import useChangeLog from './hooks/useChangeLog';
+import VersionTrackingManager from 'src/version-tracking-manager.ts';
 
 export default function ChangeLogDialog({ className }: IChangeLogDialogProps) {
   const profileRole = useGetUserRoleType();
   const profileRoleGroup = useGetUserRoleGroup();
+  const { isOpenChangeLog, setOpenChangelog, changelog, confirm, skip } = useChangeLog();
 
-  const { isOpenChangeLog, setOpenChangelog, changelog, confirm, skip } =
-    useChangelog();
-
-  const [scroll] = React.useState<DialogProps['scroll']>('paper');
+  const [scroll] = React.useState('paper');
 
   const onCloseHandle = useCallback(() => {
     skip();
@@ -56,7 +64,7 @@ export default function ChangeLogDialog({ className }: IChangeLogDialogProps) {
   }, [confirm, setOpenChangelog]);
 
   const Li = ({ roles, rolesGroup, children }: any) => {
-    if (!roles && !rolesGroup) return <li>{children}</li>;
+    if (!roles && !rolesGroup) return <li>{children};
     if (!profileRole || !profileRoleGroup) return null;
 
     const isRoleShow = String(roles).split(', ').includes(profileRole);
@@ -69,7 +77,6 @@ export default function ChangeLogDialog({ className }: IChangeLogDialogProps) {
 
   return (
     <Dialog
-      // fullScreen
       fullWidth
       aria-labelledby="scroll-dialog-title"
       aria-describedby="scroll-dialog-description"
@@ -93,8 +100,8 @@ export default function ChangeLogDialog({ className }: IChangeLogDialogProps) {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCloseHandle}>Потім</Button>
-        <Button onClick={onAgreeHandle}>Ознайомився</Button>
+        <Button onClick={onCloseHandle}>Пізніше</Button>
+        <Button onClick={onAgreeHandle}>Погоджуюсь</Button>
       </DialogActions>
     </Dialog>
   );
@@ -109,96 +116,65 @@ interface IChangeLogDialogProps {
 }
 ```
 
-## Використання хука useChangeLog
+## Крок 4: Використання хука для відображення журналу змін
 
-Тепер давайте розглянемо код хука `useChangeLog`, який використовується в компоненті `ChangeLogDialog`. Цей хук використовує бібліотеку Version Tracking Manager для відстеження версій та відображення журналу змін користувачам.
+Використовуйте хук `useChangeLog` для керування відображенням журналу змін у вашому додатку:
 
 ```javascript
+// useChangeLog.js
+
 import useAuth from '../../../hooks/profile/useAuth';
 import useProfile from '../../../hooks/profile/useProfile';
 import { useCallback, useEffect, useState } from 'react';
-import VersionTrackingManager from 'version-tracking-manager';
-
 import changelogFile from '../../../CHANGELOG.md';
+import VersionTrackingManager from 'src/version-tracking-manager.ts';
 
-export default function useChangelog() {
+export default function useChangeLog() {
   const { isAuth } = useAuth();
-
-
   const { data: profile } = useProfile();
   const [isOpenChangeLog, setOpenChangelog] = useState(false);
   const [changelog, setChangeLog] = useState<string>('');
 
   /**
-   * Подтягиваем лог изменений
+   * Отримуємо журнал змін
    */
   useEffect(() => {
     if (!profile) return;
     fetch(changelogFile)
       .then((res) => res.text())
       .then((text) => setChangeLog(text));
-    // import('../../CHANGELOG.md').then((module) => {}); // Динамический импорт
   }, [profile]);
 
   /**
-   * Показываем модалку
+   * Відображаємо модальне вікно
+
+
    */
   useEffect(() => {
     if (isAuth && profile && changelog) {
-      const versionTrackingManager = new VersionTrackingManager(
-        profile.Id, // Передаємо ID користувача як ключ
-        'changelog-view-key' // Передаємо ім'я ключа для локального сховища (за бажанням)
-      );
-
-      const hasSeenVersion = versionTrackingManager.isShowVersion(profile.Id);
-
+      const v = VersionTrackingManager.canUserSeeVersion(String(profile.Id));
       setTimeout(() => {
-        setOpenChangelog(!hasSeenVersion);
+        setOpenChangelog(!v);
       }, 2000);
     }
   }, [isAuth, profile, changelog]);
 
   /**
-   * Устанавливаем флай що користувач бачив цю версію
+   * Встановлюємо прапорець, що користувач бачив цю версію
    */
   const confirm = useCallback(() => {
     if (isAuth && profile && changelog) {
-      const versionTrackingManager = new VersionTrackingManager(
-        profile.Id, // Передаємо ID користувача як ключ
-        'changelog-view-key' // Передаємо ім'я ключа для локального сховища (за бажанням)
-      );
-
-      return versionTrackingManager.setIsShow(profile.Id);
+      const id = String(profile.Id);
+      return VersionTrackingManager.markVersionAsViewed(id);
     }
   }, [changelog, isAuth, profile]);
 
   const skip = useCallback(() => {
     if (isAuth && profile && changelog) {
-      const versionTrackingManager = new VersionTrackingManager(
-        profile.Id, // Передаємо ID користувача як ключ
-        'changelog-view-key' // Передаємо ім'я ключа для локального сховища (за бажанням)
-      );
-
-      return versionTrackingManager.skipCheckThisSession();
+      return VersionTrackingManager.skipCheckThisSession();
     }
   }, [changelog, isAuth, profile]);
 
   return { isOpenChangeLog, setOpenChangelog, changelog, confirm, skip };
 }
 ```
-
-## Ініціалізація Version Tracking Manager
-
-Бібліотека Version Tracking Manager ініціалізується з ключем (зазвичай ідентифікатором користувача) та ім'ям ключа для локального сховища. Ось приклад ініціалізації:
-
-```javascript
-const versionTrackingManager = new VersionTrackingManager(
-  userId, // Передаємо ідентифікатор користувача
-  'changelog-view-key' // Передаємо ім'я ключа для локального сховища (за бажанням)
-);
-```
-
-Цей приклад допоможе вам відстежувати версії вашого додатка та відображати зміни користувачам на основі їх взаємодії з різними версіями додатка.
-
-Це все! Тепер у вас є приклад використання бібліотеки Version Tracking Manager у вашому додатку React.js. Насолоджуйтеся відстеженням версій та сповіщеннями про зміни для вашого додатка!
-

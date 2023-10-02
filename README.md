@@ -1,83 +1,105 @@
-# Version Tracking Manager Library
 
-Here is the documentation:
+# Version Tracking Manager (VersionTrackingManager)
 
-- [Русская Документация](https://github.com/westprophet/version-tracking-manager/blob/main/docs/README.ru.md)
-- [Українська Документація](https://github.com/westprophet/version-tracking-manager/blob/main/docs/README.ua.md)
-
-The **Version Tracking Manager** library is a JavaScript library that helps you manage and track which versions of your web application users have seen. It provides a simple and efficient way to display change logs or important information to users based on their interaction with different versions of your application.
+`VersionTrackingManager` is a class for tracking versions of a web application and controlling which versions users have seen.
 
 ## Installation
 
-You can install the library using the following command:
+To install the `VersionTrackingManager` library using `yarn`, run the following command:
 
-```bash
+```shell
 yarn add version-tracking-manager
 ```
 
 ## Usage
 
-To use the **Version Tracking Manager** library, follow these steps:
-
-### Step 1: Initialize the Library
-
-In your project, create a file (e.g., `version-tracking-manager.ts`) and initialize the library by importing it and providing the current version of your application, typically obtained from your `package.json` file.
+### Creating an Instance of the Manager
 
 ```javascript
-// version-tracking-manager.ts
-
-import p from '../package.json';
 import VersionTrackingManager from 'version-tracking-manager';
 
-export default new VersionTrackingManager(p.version);
+// Get the current application version
+import { version as currentVersion } from './package.json';
+
+// Create an instance of the manager
+const versionManager = new VersionTrackingManager(currentVersion);
 ```
 
-### Step 2: Mark Versions as Viewed
-
-You can set the current version as viewed for a user by calling the `markVersionAsViewed` method. This method is used to track which users have seen the latest version of your application.
+### Setting a Flag for a User
 
 ```javascript
-const versionTrackingManager = new VersionTrackingManager(p.version);
+const userId = '123456';
 
-// Mark the current version as viewed for a user
-versionTrackingManager.markVersionAsViewed(userId);
+// Set a flag indicating that the user has seen the current version
+versionManager.setVersionAsViewed(userId);
 ```
 
-### Step 3: Check if a User Has Seen a Version
-
-To check if a user has seen a specific version of your application, use the `canUserSeeVersion` method. This method returns `true` if the user has seen the specified version, and `false` otherwise.
+### Checking If a User Has Seen a Version
 
 ```javascript
-const versionTrackingManager = new VersionTrackingManager(p.version);
+const userId = '123456';
 
-// Check if a user has seen a specific version
-const hasSeenVersion = versionTrackingManager.canUserSeeVersion(userId, version);
+// Check if the user has seen the current version of the application
+const hasSeenVersion = versionManager.canUserSeeVersion(userId);
+if (hasSeenVersion) {
+  // The user has already seen the current version
+} else {
+  // The user has not seen the current version yet
+}
 ```
 
-### Step 4: Skipping Version Checks
-
-You can allow users to skip version checks during a session by using the `skipCheckThisSession` method. This is useful if you want to prevent version change notifications from appearing repeatedly within a single session.
+### Skipping Version Checking in the Current Session
 
 ```javascript
-const versionTrackingManager = new VersionTrackingManager(p.version);
-
-// Skip version check for the current session
-versionTrackingManager.skipCheckThisSession();
+// Skip version checking for the current user session
+versionManager.skipCheckThisSession();
 ```
 
-## Contributing
+### Creating a New Entry for a Version
 
-We welcome contributions from the community. If you'd like to contribute to the **Version Tracking Manager** library, please follow our [contribution guidelines](link-to-contributions).
+```javascript
+const version = '1.2.0';
+
+// Create a new entry for version 1.2.0
+const userData = versionManager.createNewVersionEntry(version);
+if (userData) {
+  // The entry for the version was successfully created
+} else {
+  // An error occurred while creating the entry
+}
+```
+
+## Method Descriptions
+
+### `setVersionAsViewed(userId: string)`
+
+Sets a flag for the specified user indicating that they have seen the current version of the application and should no longer see notifications.
+
+- `userId` (string): User identifier.
+
+### `canUserSeeVersion(userId: string, version?: string): boolean | null`
+
+Checks if the user has seen the specified version of the application.
+
+- `userId` (string): User identifier.
+- `version` (string, optional): Version of the application to check (default is the current version).
+
+Returns `true` if the user has seen the specified version, `false` otherwise. If the user is not found in the local storage, it returns `null`.
+
+### `skipCheckThisSession()`
+
+Skips version checking for the current user session, allowing the user to not see notifications about the current version during the current session.
+
+### `createNewVersionEntry(version: string): IViewObject | null | undefined`
+
+Creates a new entry for the specified version of the application in the user's data. If the version already exists in the user's data, the method does nothing.
+
+- `version` (string): Version of the application for which to create a new entry.
+
+Returns the user's data object (`IViewObject`) after creating an entry for the specified version. If user data is not available, the method returns `null`. If an error occurs during the entry creation process, the method returns `undefined`.
 
 ## Examples
-Here are usage examples in React:
-
-- [English Example](https://github.com/westprophet/version-tracking-manager/blob/main/examples/REACT-EXAMPLE.en.md)
-- [Русский Пример](https://github.com/westprophet/version-tracking-manager/blob/main/examples/REACT-EXAMPLE.ru.md)
-- [Український Приклад](https://github.com/westprophet/version-tracking-manager/blob/main/examples/REACT-EXAMPLE.ua.md)
-
+[React](https://github.com/westprophet/version-tracking-manager/blob/main/examples/REACT-EXAMPLE.en.md)
 ## License
 
-This library is licensed under the [MIT License](link-to-license).
-
-
+`VersionTrackingManager` is licensed under the MIT License.
